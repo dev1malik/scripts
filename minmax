@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.cluster import AgglomerativeClustering
+
+def load_and_cluster(file_path, n_clusters):
+    """
+    Function to read a dataset, preprocess it using Min-Max scaling, and apply Agglomerative Clustering.
+
+    Parameters:
+        file_path (str): Path to the CSV file containing the dataset.
+        n_clusters (int): Number of clusters to form.
+
+    Returns:
+        model: Trained AgglomerativeClustering model.
+    """
+    # Step 1: Read the dataset from the CSV file
+    data = pd.read_csv(file_path)
+
+    # Step 2: Convert the dataset to a NumPy array
+    data_array = data.to_numpy()
+
+    # Step 3: Normalize the data using MinMaxScaler
+    scaler = MinMaxScaler()
+    data_normalized = scaler.fit_transform(data_array)
+
+    # Step 4: Apply AgglomerativeClustering
+    clustering_model = AgglomerativeClustering(n_clusters=n_clusters, linkage='single')
+    clustering_model.fit(data_normalized)
+
+    # Step 5: Return the trained model
+    return clustering_model
+
+# Example usage
+if __name__ == "__main__":
+    # Example dataset saved as a CSV file
+    data = np.array([[1, -1], [0.9, -0.2], [0, -0.1], [-0.9, 0], [1.1, 1],
+                     [0.8, 0.9], [1.2, -0.8], [1.8, -1.1]])
+    
+    # Save the dataset to a CSV file for testing
+    np.savetxt("data.csv", data, delimiter=",", header="x1,x2", comments="")
+
+    # Load and cluster the data
+    model = load_and_cluster("data.csv", n_clusters=3)
+
+    # Print cluster labels
+    print("Cluster labels:", model.labels_)
